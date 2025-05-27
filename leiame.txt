@@ -1,0 +1,8 @@
+Para build da wheel:
+./> python -m build
+
+.Wheels vao para dist/
+.Atualizar com pip install dist/anflex...
+
+Para build dos docs:
+./docs/> make html

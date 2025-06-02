@@ -11,6 +11,8 @@ O módulo **metocean** contém funções de leitura dos JSONs que vêm da aplica
   * :py:func:`metocean.read_wave_scatter`
   * :py:func:`metocean.read_extreme_profiles`
   * :py:func:`metocean.read_fatigue_profiles`
+  * :py:func:`metocean.merge_extreme_profiles`
+  * :py:func:`metocean.merge_fatigue_profiles`
   * :py:func:`metocean.read_clusters`
 
 O módulo **loading** tem o objetivo de montar os casos de carregamento para diferentes tipos de análises extremas e de fadiga.
@@ -38,6 +40,10 @@ Funções
 .. autofunction:: metocean.read_extreme_profiles
 
 .. autofunction:: metocean.read_fatigue_profiles
+
+.. autofunction:: metocean.merge_extreme_profiles
+
+.. autofunction:: metocean.merge_fatigue_profiles
 
 .. autofunction:: metocean.read_clusters
    

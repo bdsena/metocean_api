@@ -3,14 +3,19 @@ from anflex import loading, metocean
 
 with open('_J1_onda_extremos.json') as f:
     wave_data = json.loads(f.read())
-with open('_J2_corrente_extremos.json') as f:
-    current_data = json.loads(f.read())
+with open('_J2_corrente_extremos_50m.json') as f:
+    current_data1 = json.loads(f.read())
+with open('_J2_corrente_extremos_800m.json') as f:
+    current_data2 = json.loads(f.read())
 
 wave_data = wave_data['data']
-current_data = current_data['data']
+current_data1 = current_data1['data']
+current_data2 = current_data2['data']
 
 wave_data = metocean.read_extreme_waves(wave_data)
-current_data = metocean.read_extreme_profiles(current_data)
+current_data1 = metocean.read_extreme_profiles(current_data1)
+current_data2 = metocean.read_extreme_profiles(current_data2)
+current_data = metocean.merge_extreme_profiles([current_data1, current_data2])
 
 floating_data = loading.FloatingData('FPSO', heading=190.0)
 

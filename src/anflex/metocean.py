@@ -166,6 +166,100 @@ def read_extreme_profiles(current_data):
     
     return json.loads(lua.globals().lua_out)
 
+def merge_extreme_profiles(current_data):
+    """
+    Une uma lista de dados de perfis de correntes extremos, previamente lidos pela função read_extreme_profiles().
+    
+    Exemplo de uso:
+    
+    >>> from anflex import metocean
+    >>> 
+    >>> with open('corrente1.json') as f:
+    >>>     current_data1 = json.loads(f.read())
+    >>> with open('corrente2.json') as f:
+    >>>     current_data2 = json.loads(f.read())
+    >>> 
+    >>> current_data1 = current_data1['data']
+    >>> current_data2 = current_data2['data']
+    >>> 
+    >>> current_data1 = metocean.read_extreme_profiles(current_data1)
+    >>> current_data2 = metocean.read_extreme_profiles(current_data2)
+    >>> 
+    >>> current_data = metocean.merge_extreme_profiles([current_data1, current_data2])
+
+    :param list current_data: Lista com perfis de corrente extremos.
+
+    :return: Lista com união dos perfis de corrente fornecidos.
+    :rtype: list
+    """
+
+    lua = LuaRuntime(unpack_returned_tuples=True)
+    
+    src_dir = os.path.dirname(__file__)
+    json_lua_path = os.path.join(src_dir, "json.lua").replace('\\','\\\\')
+    api_lua_path = os.path.join(src_dir, "import_loading_api.lua").replace('\\','\\\\')
+    
+    lua.execute('json = dofile("{0}")'.format(json_lua_path))
+    lua.execute('dofile("{0}")'.format(api_lua_path))
+    
+    current_data_string = json.dumps(current_data)
+    
+    lua_func = lua.eval('function(pystr) lua_str = pystr end')
+    lua_func(current_data_string)
+    
+    lua.execute('lua_table = json.decode(lua_str)')
+    lua.execute('lua_result = api_merge_extreme_profiles(lua_table)')
+    lua.execute('lua_out = json.encode(lua_result)')
+    
+    return json.loads(lua.globals().lua_out)
+
+def merge_fatigue_profiles(current_data):
+    """
+    Une uma lista de dados de perfis de correntes de fadiga, previamente lidos pela função read_fatigue_profiles().
+    
+    Exemplo de uso:
+    
+    >>> from anflex import metocean
+    >>> 
+    >>> with open('corrente1.json') as f:
+    >>>     current_data1 = json.loads(f.read())
+    >>> with open('corrente2.json') as f:
+    >>>     current_data2 = json.loads(f.read())
+    >>> 
+    >>> current_data1 = current_data1['data']
+    >>> current_data2 = current_data2['data']
+    >>> 
+    >>> current_data1 = metocean.read_fatigue_profiles(current_data1)
+    >>> current_data2 = metocean.read_fatigue_profiles(current_data2)
+    >>> 
+    >>> current_data = metocean.merge_fatigue_profiles([current_data1, current_data2])
+
+    :param list current_data: Lista com perfis de corrente de fadiga.
+
+    :return: Lista com união dos perfis de corrente fornecidos.
+    :rtype: list
+    """
+
+    lua = LuaRuntime(unpack_returned_tuples=True)
+    
+    src_dir = os.path.dirname(__file__)
+    json_lua_path = os.path.join(src_dir, "json.lua").replace('\\','\\\\')
+    api_lua_path = os.path.join(src_dir, "import_loading_api.lua").replace('\\','\\\\')
+    
+    lua.execute('json = dofile("{0}")'.format(json_lua_path))
+    lua.execute('dofile("{0}")'.format(api_lua_path))
+    
+    current_data_string = json.dumps(current_data)
+    
+    lua_func = lua.eval('function(pystr) lua_str = pystr end')
+    lua_func(current_data_string)
+    
+    lua.execute('lua_table = json.decode(lua_str)')
+    lua.execute('lua_result = api_merge_fatigue_profiles(lua_table)')
+    lua.execute('lua_out = json.encode(lua_result)')
+    
+    return json.loads(lua.globals().lua_out)
+
 def read_clusters(cluster_data):
     """
     Reformata dados de clusters para análise de fadiga a partir de um JSON da aplicação Metocean.
@@ -212,5 +306,7 @@ __all__ = [
     'read_extreme_waves',
     'read_fatigue_profiles',
     'read_extreme_profiles',
+    'merge_fatigue_profiles',
+    'merge_extreme_profiles',
     'read_clusters',
 ]

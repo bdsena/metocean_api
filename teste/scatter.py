@@ -3,14 +3,19 @@ from anflex import loading, metocean
 
 with open('_J1_onda_scatter.json') as f:
     wave_data = json.loads(f.read())
-with open('_J2_corrente_fadiga.json') as f:
-    current_data = json.loads(f.read())
+with open('_J2_corrente_fadiga_50m.json') as f:
+    current_data1 = json.loads(f.read())
+with open('_J2_corrente_fadiga_800m.json') as f:
+    current_data2 = json.loads(f.read())
 
 wave_data = wave_data['data']
-current_data = current_data['data']
+current_data1 = current_data1['data']
+current_data2 = current_data2['data']
 
 wave_data = metocean.read_wave_scatter(wave_data)
-current_data = metocean.read_fatigue_profiles(current_data)
+current_data1 = metocean.read_fatigue_profiles(current_data1)
+current_data2 = metocean.read_fatigue_profiles(current_data2)
+current_data = metocean.merge_fatigue_profiles([current_data1, current_data2])
 
 method = "Irregular"
 
@@ -31,9 +36,9 @@ rao_data.add_rao("RAO2_Vazio", draft_label="Vazio", hsmin=2.5, hsmax=4.5)
 rao_data.add_rao("RAO3_Vazio", draft_label="Vazio", hsmin=4.5, hsmax=99.)
 
 directions = loading.DirectionData()
-directions.add("N", offset_value=5.0, offset_type="% WD", current="C_S_0m_05")
+directions.add("N", offset_value=5.0, offset_type="% WD", current="C_S_50m_4")
 # [...]
-directions.add("S", offset_value=5.0, offset_type="% WD", current="C_N_0m_4")
+directions.add("S", offset_value=5.0, offset_type="% WD", current="C_N_50m_4")
 
 lcases = loading.fatigue_scatter(method, directions, floating_data, rao_data, wave_data, current_data)
 

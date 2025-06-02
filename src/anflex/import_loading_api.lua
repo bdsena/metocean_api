@@ -55,6 +55,7 @@ function api_read_fatigue_profiles(curr_data, keep_metadata)
         freq_sum = freq_sum + profile.frequency
       end
     end
+    init_curr_data.freq_sum = freq_sum -- precisa ser deletado pela funcao merge
     
     local function match_zeros(value, maxvalue)
       local max_digits = string.len(tostring(maxvalue))
@@ -115,7 +116,7 @@ function api_read_wave_cluster(data)
     local label = cluster.cluster_label
     
     to_dlg[label] = {
-      ocorr = cluster.percentage
+      ocorr = cluster.percentage / 100
     }
     
     local depth_table = nil
@@ -154,7 +155,7 @@ function api_read_wave_cluster(data)
     
     local current_data = {
       lbl = "C_"..label,
-      occ = cluster.percentage,
+      occ = cluster.percentage / 100,
       points = {},
     }
     for i = 1, npts do
@@ -385,4 +386,68 @@ function api_read_extreme_profiles(curr_data)
   
   return currents
   
+end
+
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+-------------------------------  MERGES  -----------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
+function api_merge_fatigue_profiles(json_data_list)
+  local json_data = {}
+  local global_freq_sum = 0
+  for i = 1, #json_data_list do
+    global_freq_sum = global_freq_sum + json_data_list[i].freq_sum
+  end
+  for i = 1, #json_data_list do
+    local local_freq_sum = json_data_list[i].freq_sum
+    json_data_list[i].freq_sum = nil
+    for dir_label, dir_profiles in pairs(json_data_list[i]) do
+      if json_data[dir_label] == nil then
+        json_data[dir_label] = {}
+      end
+      if dir_label == "metadata" then
+        for iblock, block in ipairs(dir_profiles) do -- dir_profiles sao os blocos de metadado
+          table.insert(json_data.metadata, block)
+        end
+      else
+        for typ_label, typ_profiles in pairs(dir_profiles) do
+          if json_data[dir_label][typ_label] == nil then
+            json_data[dir_label][typ_label] = {}
+          end
+          for i, current_data in ipairs(typ_profiles) do
+            current_data.occ = current_data.occ * local_freq_sum / global_freq_sum
+            table.insert(json_data[dir_label][typ_label], current_data)
+          end
+        end
+      end
+    end
+  end
+  return json_data
+end
+
+function api_merge_extreme_profiles(json_data_list)
+  local json_data = json_data_list[1]
+  for i = 2, #json_data_list do
+    for level, level_profiles in pairs(json_data_list[i]) do
+      if json_data[level] == nil then
+        json_data[level] = {}
+      end
+      for rp, rp_profiles in pairs(level_profiles) do
+        if json_data[level][rp] == nil then
+          json_data[level][rp] = {}
+        end
+        for dir, dir_profiles in pairs(rp_profiles) do
+          if json_data[level][rp][dir] == nil then
+            json_data[level][rp][dir] = {}
+          end
+          for i, current_data in ipairs(dir_profiles) do
+            table.insert(json_data[level][rp][dir], current_data)
+          end
+        end
+      end
+    end
+  end
+  return json_data
 end

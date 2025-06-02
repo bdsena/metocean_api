@@ -166,7 +166,7 @@ def read_extreme_profiles(current_data):
     
     return json.loads(lua.globals().lua_out)
 
-def merge_extreme_profiles(current_data):
+def merge_extreme_profiles(current_data_list):
     """
     Une uma lista de dados de perfis de correntes extremos, previamente lidos pela função read_extreme_profiles().
     
@@ -202,7 +202,7 @@ def merge_extreme_profiles(current_data):
     lua.execute('json = dofile("{0}")'.format(json_lua_path))
     lua.execute('dofile("{0}")'.format(api_lua_path))
     
-    current_data_string = json.dumps(current_data)
+    current_data_string = json.dumps(current_data_list)
     
     lua_func = lua.eval('function(pystr) lua_str = pystr end')
     lua_func(current_data_string)
@@ -213,7 +213,7 @@ def merge_extreme_profiles(current_data):
     
     return json.loads(lua.globals().lua_out)
 
-def merge_fatigue_profiles(current_data):
+def merge_fatigue_profiles(current_data_list):
     """
     Une uma lista de dados de perfis de correntes de fadiga, previamente lidos pela função read_fatigue_profiles().
     
@@ -249,7 +249,7 @@ def merge_fatigue_profiles(current_data):
     lua.execute('json = dofile("{0}")'.format(json_lua_path))
     lua.execute('dofile("{0}")'.format(api_lua_path))
     
-    current_data_string = json.dumps(current_data)
+    current_data_string = json.dumps(current_data_list)
     
     lua_func = lua.eval('function(pystr) lua_str = pystr end')
     lua_func(current_data_string)
